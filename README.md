@@ -9,8 +9,7 @@ The source code for this project is provided under the bzip2-1.0.6 license. Text
 
 ### Prerequisite(s)
 
-Install the Wind River&reg; VxWorks&reg; 7 operating system. This layer requires the build support included in the September 2016 release.
-For Linux build hosts, you must have **curl** or **wget** and **patch** installed in addition to the regular build support for VxWorks.   
+Install the Wind River&reg; VxWorks&reg; 7 operating system...  
 
 ### Legal Notices
 
