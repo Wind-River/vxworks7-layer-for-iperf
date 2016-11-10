@@ -13,11 +13,10 @@ Component INCLUDE_IPERF3 {
         SYNOPSIS        iperf3 is a TCP, UDP, and SCTP network bandwidth measurement tool
         MODULES         vxiperf3.o
         LINK_SYMS       iperf3
-        REQUIRES        INCLUDE_SOCKLIB INCLUDE_GETOPT
+        REQUIRES        INCLUDE_SOCKLIB INCLUDE_GETOPT INCLUDE_GETADDRINFO INCLUDE_RTP
         _CHILDREN       FOLDER_NET_L5_APPLICATIONS
 }
 
-/*
 Component INCLUDE_IPERF3_CMD {
         NAME            iperf3 network benchmark tool shell command
         SYNOPSIS        iperf3 is a TCP, UDP, and SCTP network bandwidth measurement tool
@@ -28,4 +27,3 @@ Component INCLUDE_IPERF3_CMD {
         REQUIRES        INCLUDE_SOCKLIB INCLUDE_GETOPT INCLUDE_SHELL_INTERP_CMD
         _CHILDREN       FOLDER_NET_L5_APPLICATIONS
 }
-*/
