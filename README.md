@@ -22,7 +22,7 @@ to arrange for consulting services.
 
 #Project License
 
-The source code for this project is provided under the iPerf license. 
+The source code for this project is provided under the BSD-3-Clause license license. 
 Text for the iPerf and other applicable license notices can be found in 
 the LICENSE_NOTICES.txt file in the project top level directory. Different 
 files may be under different licenses. Each source file should include a 
