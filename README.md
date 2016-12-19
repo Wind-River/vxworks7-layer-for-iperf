@@ -125,6 +125,11 @@ can be run as a client like this
 
 #Legal Notices
 
+All product names, logos, and brands are property of their respective owners. All company, 
+product and service names used in this software are for identification purposes only. 
+Wind River and VxWorks are registered trademarks of Wind River Systems, Inc. UNIX is a 
+registered trademark of The Open Group.
+
 Disclaimer of Warranty / No Support: Wind River does not provide support 
 and maintenance services for this software, under Wind River’s standard 
 Software Support and Maintenance Agreement or otherwise. Unless required 
