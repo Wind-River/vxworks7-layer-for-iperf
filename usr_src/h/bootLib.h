@@ -35,6 +35,7 @@ modification history
 #define __INCbootLibh
 
 #include <vxWorks.h>
+#include <strings.h>
 
 #ifdef __cplusplus
 extern "C" {

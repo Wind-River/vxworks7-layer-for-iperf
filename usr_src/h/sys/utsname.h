@@ -50,8 +50,6 @@ extern "C" {
 #define RUSAGE_CHILDREN	1
 #define RUSAGE_THREAD	2
 
-char * sysBootLine;
-
 /* typedefs */
 
 struct rusage
