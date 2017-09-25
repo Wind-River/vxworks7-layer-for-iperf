@@ -1,6 +1,6 @@
 #  vxworks.mak - for iperf3
 #
-#Copyright (c) 2016, Wind River Systems, Inc.
+#Copyright (c) 2016-2017, Wind River Systems, Inc.
 #
 #Redistribution and use in source and binary forms, with or without modification, are
 #permitted provided that the following conditions are met:
@@ -25,8 +25,11 @@
 #
 # modification history
 # -------------------- 
+# 25sep17,chm  added llvm support
 # 06oct16,chm  licensed
 #
+
+include $(WIND_USR_MK)/defs.vsbvars.mk
 
 RTP_BASE_DIR = iperf3
 
@@ -49,6 +52,9 @@ include $(WIND_USR_MK)/rules.rtp.mk
 
 # Include the network stack. Undefining the rtnetStackEnable symbol
 # will force pulling in the constructor when building the RTP.
-ifdef _WRS_CONFIG_RTNET_RTP
+
+ifeq ($(TOOL),llvm)
+LD_EXEC_FLAGS += -u rtnetStackEnable
+else
 LD_EXEC_FLAGS += -Wl,-urtnetStackEnable
 endif
