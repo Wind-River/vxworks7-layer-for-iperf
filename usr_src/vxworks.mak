@@ -25,6 +25,7 @@
 #
 # modification history
 # -------------------- 
+# 28sep17,chm  fix an build error when RTNET_RTP is not added
 # 25sep17,chm  added llvm support
 # 06oct16,chm  licensed
 #
@@ -53,8 +54,10 @@ include $(WIND_USR_MK)/rules.rtp.mk
 # Include the network stack. Undefining the rtnetStackEnable symbol
 # will force pulling in the constructor when building the RTP.
 
+ifdef _WRS_CONFIG_RTNET_RTP
 ifeq ($(TOOL),llvm)
 LD_EXEC_FLAGS += -u rtnetStackEnable
 else
 LD_EXEC_FLAGS += -Wl,-urtnetStackEnable
+endif
 endif
