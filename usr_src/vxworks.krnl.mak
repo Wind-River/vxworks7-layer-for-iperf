@@ -74,3 +74,8 @@ OBJS = vxiperf3.o  \
 	   units.o
 	   
 include $(WIND_KRNL_MK)/rules.library.mk
+
+#
+# this code is 3rd party.  Suppress all compiler warnings
+#
+CC_WARNINGS = $(CC_WARNINGS_NONE)

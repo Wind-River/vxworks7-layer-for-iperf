@@ -39,6 +39,7 @@ EXE= iperf3.vxe
 OBJS = iperf3.o
 
 # Add user space network libraries
+
 ADDED_LIBS += -liperf3
 
 ifdef _WRS_CONFIG_RTNET_RTP
@@ -61,3 +62,8 @@ else
 LD_EXEC_FLAGS += -Wl,-urtnetStackEnable
 endif
 endif
+
+#
+# this code is 3rd party.  Suppress all compiler warnings
+#
+CC_WARNINGS = $(CC_WARNINGS_NONE)

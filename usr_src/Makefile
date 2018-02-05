@@ -50,4 +50,7 @@ endif
 
 include $(WIND_KRNL_MK)/rules.unix.ports.mk
 
-
+#
+# this code is 3rd party.  Suppress all compiler warnings
+#
+CC_WARNINGS = $(CC_WARNINGS_NONE)
