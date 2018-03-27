@@ -1,7 +1,7 @@
 /* wrappers.h - wrapper functions required to build iperf for VxWorks */
 
 /*
-Copyright (c) 2016, Wind River Systems, Inc.
+Copyright (c) 2016, 2018 Wind River Systems, Inc.
 
 Redistribution and use in source and binary forms, with or without modification, are
 permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@ OF THEUSE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*
 modification history
 --------------------
+27mar18,wjf  modify for conflict of gethostname (V7TST-1026)
 31aug16,kjn  written
 */
 
@@ -111,32 +112,6 @@ _WRS_INLINE int mkstemp
     )
     {
     return DUMMY_FD;
-    }
-
-/*******************************************************************************
-*
-* gethostname - get host name
-*
-* Wrapper function
-*
-* RETURNS: Always 0
-*
-* ERRNO: N/A
-*/
-
-_WRS_INLINE int gethostname
-    (
-    char * name,
-    size_t len
-    )
-    {
-    BOOT_PARAMS p;
-
-    (void)bootStringToStruct (sysBootLine, &p);
-    strncpy (name, p.targetName, len - 1);
-    name[len - 1] = '\0';
-
-    return 0;
     }
 
 #ifdef __cplusplus
