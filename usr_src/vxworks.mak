@@ -40,7 +40,7 @@ OBJS = iperf3.o
 
 # Add user space network libraries
 
-ADDED_LIBS += -liperf3
+ADDED_LIBS += -liperf3 -lnet
 
 ifdef _WRS_CONFIG_RTNET_RTP
 ADDED_LIBS += -lnet_base -ljson -lrtnet
