@@ -50,6 +50,10 @@ extern "C" {
 #define RUSAGE_CHILDREN	1
 #define RUSAGE_THREAD	2
 
+#ifdef _WRS_CONFIG_CORE_VERSION
+#define _WRS_CONFIG_CORE_KERNEL_VERSION _WRS_CONFIG_CORE_VERSION
+#endif
+
 /* typedefs */
 
 struct rusage
