@@ -1,7 +1,7 @@
 /* utsname.h - kernel information library header file */
 
 /*
-Copyright (c) 2016, Wind River Systems, Inc.
+Copyright (c) 2016, 2018 Wind River Systems, Inc.
 
 Redistribution and use in source and binary forms, with or without modification, are
 permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@ OF THEUSE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*
 modification history
 --------------------
+23jul18,chm  Fix V7TST-1125
 31aug16,kjn  written
 */
 
@@ -123,12 +124,8 @@ _WRS_INLINE int getrusage
 
 _WRS_INLINE int uname(struct utsname *name)
     {
-    BOOT_PARAMS p;
-
-    (void)bootStringToStruct (sysBootLine, &p);
-
     strcpy (name->sysname, "VxWorks");
-    strcpy (name->nodename, p.targetName);
+    strcpy (name->nodename, "");
     strcpy (name->release, _WRS_CONFIG_CORE_KERNEL_VERSION);
     strcpy (name->version, "7");
     strcpy (name->machine, "");

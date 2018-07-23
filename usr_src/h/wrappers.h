@@ -28,6 +28,7 @@ OF THEUSE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*
 modification history
 --------------------
+23jul18,chm  fix V7TST-1125
 27mar18,wjf  modify for conflict of gethostname (V7TST-1026)
 31aug16,kjn  written
 */
@@ -55,8 +56,6 @@ extern "C" {
 #define getpid 		(int)taskIdSelf
 
 #define DUMMY_FD	99
-
-extern char * sysBootLine;
 
 /* typedefs */
 
