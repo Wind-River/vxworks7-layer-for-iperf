@@ -124,6 +124,7 @@ OF THEUSE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* #undef const */
 
 #include <sockLib.h>
+#include "wrappers.h"
 extern int h_errno;
 const char *hstrerror(int err);
 

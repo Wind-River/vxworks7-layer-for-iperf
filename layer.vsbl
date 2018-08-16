@@ -37,7 +37,7 @@ Layer IPERF3
     VERSION         3.1.3.0
     VENDOR          The Regents of the University of California
     FEATURE         NETWORKING
-    LAYER_REQUIRES  SOCKET NET_BASE UNIX
+    LAYER_REQUIRES  SOCKET NET_BASE
     VSB_REQUIRES
     OPTIONAL        YES
     DEFAULT         YES
