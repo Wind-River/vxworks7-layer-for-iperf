@@ -1,6 +1,6 @@
 # Makefile for iperf3 apps
 #
-#Copyright (c) 2016, Wind River Systems, Inc.
+#Copyright (c) 2016, 2018 Wind River Systems, Inc.
 #
 #Redistribution and use in source and binary forms, with or without modification, are
 #permitted provided that the following conditions are met:
@@ -25,13 +25,14 @@
 #
 # modification history
 # -------------------- 
+# 25oct18,chm  update PKG_URL to official sources 
 # 06oct16,chm  licensed
 #
 
 include $(WIND_KRNL_MK)/defs.ver.mk
 
-PKG_URL = https://iperf.fr/download/source/iperf-$(PKG_VER)-source.tar.gz
-PKG_NAME = iperf-$(PKG_VER)-source.tar.gz
+PKG_URL = https://downloads.es.net/pub/iperf/iperf-$(PKG_VER).tar.gz
+PKG_NAME = iperf-$(PKG_VER).tar.gz
 PKG_FILE_TYPE = unpack
 
 PKG_BUILD_DIR = iperf-$(PKG_VER)/src

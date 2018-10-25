@@ -36,7 +36,7 @@ license notice that designates the licensing terms for the respective file.
 
 * Ensure the iPerf3 for C source code is available from the following location:
 
-    https://iperf.fr/download/source/iperf- *version* -source.tar.gz
+    https://downloads.es.net/pub/iperf/iperf-$(PKG_VER).tar.gz
 
 * You must have **patch** installed in addition to the regular build support 
   for VxWorks. 
