@@ -92,6 +92,22 @@ can be done with the VxWorks *sp* command (spawn). Spawning an iPerf3
 server in the background on all local IPv4 addresses is done like this:
 
     -> sp iperf3,"-s -B 0.0.0.0"
+	
+With IPv6 address is done like this:
+
+    -> sp iperf3,"-s -B ::0 -6"
+	
+or
+
+    -> sp iperf3,"-s -B 2001:db8:21:111:0:0:0:1 -6" 
+
+with a specific Gloable Unicast address	
+
+or
+
+    -> sp iperf3,"-s -B fe80::787a:c0ff:fea8:c878%simnet0 -6" 
+
+with a specific Link Local address	
 
 ####Command line shell
 
@@ -105,7 +121,7 @@ command line shell by including the VIP component INCLUDE_IPERF3_CMD
 The command is added under the "network" topic in the shell and iPerf3
 can be run as a client like this
 
-    [vxWorks *]# iperf3 -c192.168.200.254 -t3
+    [vxWorks *]# iperf3 -c 192.168.200.254 -t3
     Connecting to host 192.168.200.254, port 5201
     [  8] local 192.168.200.10 port 58786 connected to 192.168.200.254
     port 5201
@@ -122,6 +138,34 @@ can be run as a client like this
 
     iperf Done.
     [vxWorks *]#
+	
+For IPv6 Link Local address do like this
+
+    [vxWorks *]# iperf3 -c fe80::787a:c0ff:fea8:c878%simnet0 -6
+    Connecting to host fe80::787a:c0ff:fea8:c878%simnet0, port 5201
+    [  9] local fe80::787a:c0ff:fea8:c882 port 53997 connected to fe80::787a:c0ff:fea8:c878 port 5201
+    [ ID] Interval           Transfer     Bandwidth
+    [  9]   0.00-1.00   sec  25.4 MBytes   213 Mbits/sec                  
+    [  9]   1.00-2.00   sec  27.7 MBytes   233 Mbits/sec                  
+    [  9]   2.00-3.00   sec  26.4 MBytes   222 Mbits/sec                  
+    [  9]   3.00-4.00   sec  24.8 MBytes   208 Mbits/sec                  
+    [  9]   4.00-5.00   sec  27.3 MBytes   229 Mbits/sec                  
+    [  9]   5.00-6.00   sec  27.0 MBytes   226 Mbits/sec                  
+    [  9]   6.00-7.00   sec  25.7 MBytes   216 Mbits/sec                  
+    [  9]   7.00-8.00   sec  22.0 MBytes   185 Mbits/sec                  
+    [  9]   8.00-9.00   sec  19.9 MBytes   167 Mbits/sec                  
+    [  9]   9.00-10.00  sec  20.3 MBytes   171 Mbits/sec                  
+    - - - - - - - - - - - - - - - - - - - - - - - - -
+    [ ID] Interval           Transfer     Bandwidth
+    [  9]   0.00-10.00  sec   247 MBytes   207 Mbits/sec                  sender
+    [  9]   0.00-10.00  sec   247 MBytes   207 Mbits/sec                  receiver
+
+iperf Done.
+[vxWorks *]# 
+
+For IPv6 Gloable Unicast address do like this
+
+    [vxWorks *]# iperf3 -c 2001:db8:21:111:0:0:0:1 -6	
 
 #Legal Notices
 

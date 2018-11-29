@@ -215,21 +215,16 @@ _WRS_INLINE void freeaddrinfo(struct addrinfo *ai)
 	
 _WRS_INLINE int getaddrinfo(const char *nodename, const char *servname, const struct addrinfo *hints, struct addrinfo **res)
 {
-    struct addrinfo *head_res = NULL;
-    struct addrinfo *tail_res = NULL;
     struct addrinfo *new_res;
     struct sockaddr_in *sa_in;
-    struct in_addr **addr_list;
-    struct in_addr *addr_list_buf[2];
-    struct in_addr addr_buf;
-    struct in_addr **ap;
-    struct servent *servent;
-    struct hostent *hostent;
-    const char *canonname = NULL;
+    struct sockaddr_in6 *sa_in6;	
+    struct in_addr addr;	
+    struct in6_addr addr6;	
     int port;
     int saved_h_errno;
     int result = 0;
-
+    const char *ifname = NULL;
+	
     /*
      * Default hints for getaddrinfo().
      */
@@ -239,16 +234,17 @@ _WRS_INLINE int getaddrinfo(const char *nodename, const char *servname, const st
 	
     saved_h_errno = h_errno = 0;
 
-    if (nodename == NULL && servname == NULL) {
-	result = EAI_NONAME;
-	goto end;
+    if (nodename == NULL) {
+	    result = EAI_NONAME;
+	    goto end;
     }
 
     if (hints != NULL) {
-	if (hints->ai_family != PF_INET && hints->ai_family != PF_UNSPEC) {
+	if (hints->ai_family != PF_INET && hints->ai_family != PF_INET6 && hints->ai_family != PF_UNSPEC) {
 	    result = EAI_FAMILY;
 	    goto end;
 	}
+	
 	if (hints->ai_socktype != SOCK_DGRAM
 	    && hints->ai_socktype != SOCK_STREAM
 	    && hints->ai_socktype != 0) {
@@ -260,134 +256,92 @@ _WRS_INLINE int getaddrinfo(const char *nodename, const char *servname, const st
     }
 
     if (servname != NULL) {
-	if (is_integer(servname))
-	    port = htons(atoi(servname));
-	else  {
-	    if (hints->ai_flags & AI_NUMERICSERV) {
-		result = EAI_NONAME;
-		goto end;
-	    }
-
-	    if (hints->ai_socktype == SOCK_DGRAM)
-		servent = getservbyname(servname, "udp");
-	    else if (hints->ai_socktype == SOCK_STREAM)
-		servent = getservbyname(servname, "tcp");
-	    else if (hints->ai_socktype == 0)
-		servent = getservbyname(servname, "tcp");
-	    else {
-		result = EAI_SOCKTYPE;
-		goto end;
-	    }
-
-	    if (servent == NULL) {
-		result = EAI_SERVICE;
-		goto end;
-	    }
-	    port = servent->s_port;
-	}
+	    if (is_integer(servname))
+	        port = htons(atoi(servname));
     } else {
-	port = htons(0);
+	    port = htons(0);
     }
-
-    if (nodename != NULL) {
-	if (is_address(nodename)) {
-	    addr_buf.s_addr = inet_addr(nodename);
-	    addr_list_buf[0] = &addr_buf;
-	    addr_list_buf[1] = NULL;
-	    addr_list = addr_list_buf;
-
-	    if (hints->ai_flags & AI_CANONNAME
-		&& !(hints->ai_flags & AI_NUMERICHOST)) {
-		hostent = gethostbyaddr((char *)&addr_buf,
-		    sizeof(struct in_addr), AF_INET);
-		if (hostent != NULL)
-		    canonname = hostent->h_name;
-		else
-		    canonname = nodename;
-	    }
-	} else {
-	    if (hints->ai_flags & AI_NUMERICHOST) {
-		result = EAI_NONAME;
-		goto end;
-	    }
-
-	    hostent = gethostbyname(nodename);
-	    if (hostent == NULL) {
-		switch (h_errno) {
-		case HOST_NOT_FOUND:
-		case NO_DATA:
-		    result = EAI_NONAME;
-		    goto end;
-		case TRY_AGAIN:
-		    result = EAI_AGAIN;
-		    goto end;
-		default:
-		    result = EAI_FAIL;
-		    goto end;
-                }
-	    }
-	    addr_list = (struct in_addr **)hostent->h_addr_list;
-
-	    if (hints->ai_flags & AI_CANONNAME)
-		canonname = hostent->h_name;
-	}
-    } else {
-	if (hints->ai_flags & AI_PASSIVE)
-	    addr_buf.s_addr = htonl(INADDR_ANY);
-	else
-	    addr_buf.s_addr = htonl(0x7F000001);
-	addr_list_buf[0] = &addr_buf;
-	addr_list_buf[1] = NULL;
-	addr_list = addr_list_buf;
-    }
-
-    for (ap = addr_list; *ap != NULL; ap++) {
+    
 	new_res = (struct addrinfo *)malloc(sizeof(struct addrinfo));
 	if (new_res == NULL) {
-	    if (head_res != NULL)
-		freeaddrinfo(head_res);
 	    result = EAI_MEMORY;
 	    goto end;
-	}
+	}  
+	
+	memset(new_res, 0, sizeof(struct addrinfo));
+	
+    if (hints->ai_family == AF_INET || hints->ai_family == AF_UNSPEC){
+    	new_res->ai_family = AF_INET;
+    }else {
+    	new_res->ai_family = AF_INET6;	
+    }
 
-	new_res->ai_family = PF_INET;
 	new_res->ai_socktype = hints->ai_socktype;
 	new_res->ai_protocol = hints->ai_protocol;
-	new_res->ai_addr = NULL;
-	new_res->ai_addrlen = sizeof(struct sockaddr_in);
+	new_res->ai_addr = malloc(sizeof(char)*28);
+	if (new_res->ai_addr == NULL){
+        free(new_res);
+        result = EAI_MEMORY;
+        goto end;		
+	}		
+	new_res->ai_addrlen = 28;
 	new_res->ai_canonname = NULL;
-	new_res->ai_next = NULL;
-
-	new_res->ai_addr = (struct sockaddr *)
-	    malloc(sizeof(struct sockaddr_in));
-	if (new_res->ai_addr == NULL) {
-	    free(new_res);
-	    if (head_res != NULL)
-		freeaddrinfo(head_res);
-	    result = EAI_MEMORY;
-	    goto end;
+	new_res->ai_next = NULL;    
+    
+    if (new_res->ai_family == AF_INET){
+        if(inet_pton(AF_INET, nodename, (void *)&addr) != 1){
+	        free(new_res->ai_addr); 
+	        free(new_res);
+    	    result = EAI_FAIL;
+    	    goto end;
+		}
 	}
 
-	sa_in = (struct sockaddr_in *)new_res->ai_addr;
-	memset(sa_in, 0, sizeof(struct sockaddr_in));
-	sa_in->sin_family = PF_INET;
-	sa_in->sin_port = port;
-	memcpy(&sa_in->sin_addr, *ap, sizeof(struct in_addr));
+    if (new_res->ai_family == AF_INET6){
+        if(inet_pton(AF_INET6, nodename, (void *)&addr6) != 1){
+	        free(new_res->ai_addr);         	
+	        free(new_res);        	
+	        result = EAI_FAIL;
+	        goto end;	
+		}
+	}
+    
+	if (new_res->ai_family == AF_INET){
+	    sa_in = (struct sockaddr_in *)new_res->ai_addr;
+	    sa_in->sin_family = AF_INET;
+	    sa_in->sin_port = port;
+	    memcpy(&sa_in->sin_addr, &addr, sizeof(struct in_addr));
+		new_res->ai_addrlen = sizeof(struct sockaddr_in);		
+	}
 
-	if (head_res == NULL)
-	    head_res = new_res;
-	else
-	    tail_res->ai_next = new_res;
-	tail_res = new_res;
-    }
+	if (new_res->ai_family == AF_INET6){	
+	    sa_in6 = (struct sockaddr_in6 *)new_res->ai_addr;
+	    sa_in6->sin6_family = AF_INET6;
+	    sa_in6->sin6_port = port;
+	    sa_in6->sin6_flowinfo = 0;
+	    sa_in6->sin6_scope_id = 0;
+	    memcpy(&sa_in6->sin6_addr, &addr6, sizeof(struct in6_addr));
+		new_res->ai_addrlen = sizeof(struct sockaddr_in6);	
+		
+		ifname = strchr(nodename, '%');		
+        if (ifname != NULL && *ifname++ != '\0'){
+            char * endp = NULL;
 
-    if (canonname != NULL && head_res != NULL) {
-	head_res->ai_canonname = (char *)malloc(strlen(canonname) + 1);
-	if (head_res->ai_canonname != NULL)
-	    strcpy(head_res->ai_canonname, canonname);
-    }
+            sa_in6->sin6_scope_id = if_nametoindex ((const char *) ifname);
 
-    *res = head_res;
+            if (sa_in6->sin6_scope_id == 0 && isdigit (*ifname))
+            	sa_in6->sin6_scope_id = strtoul (ifname, &endp, 0);
+
+            if (sa_in6->sin6_scope_id == 0){
+    	        free(new_res->ai_addr);         	
+    	        free(new_res);        	
+    	        result = EAI_FAIL;
+    	        goto end;
+            }
+        }				
+	}		
+
+    *res = new_res;   
 
   end:
     h_errno = saved_h_errno;
