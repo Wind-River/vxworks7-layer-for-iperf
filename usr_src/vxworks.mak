@@ -56,11 +56,9 @@ include $(WIND_USR_MK)/rules.rtp.mk
 # will force pulling in the constructor when building the RTP.
 
 ifdef _WRS_CONFIG_RTNET_RTP
-ifeq ($(TOOL),llvm)
 LD_EXEC_FLAGS += -u rtnetStackEnable
-else
-LD_EXEC_FLAGS += -Wl,-urtnetStackEnable
-endif
+LD_EXEC_FLAGS += -u rtnetStackIp4Enable
+LD_EXEC_FLAGS += -u rtnetStackIp6Enable
 endif
 
 #
