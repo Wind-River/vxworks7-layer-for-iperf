@@ -58,8 +58,12 @@ include $(WIND_USR_MK)/rules.rtp.mk
 ifdef _WRS_CONFIG_RTNET_RTP
 ifeq ($(TOOL),llvm)
 LD_EXEC_FLAGS += -u rtnetStackEnable
+LD_EXEC_FLAGS += -u rtnetStackIp4Enable
+LD_EXEC_FLAGS += -u rtnetStackIp6Enable
 else
 LD_EXEC_FLAGS += -Wl,-urtnetStackEnable
+LD_EXEC_FLAGS += -Wl,-urtnetStackIp4Enable
+LD_EXEC_FLAGS += -Wl,-urtnetStackIp6Enable
 endif
 endif
 
