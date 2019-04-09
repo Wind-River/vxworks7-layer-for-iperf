@@ -2,7 +2,7 @@ VxWorks® 7 Recipe Layer for iPerf3
 ===
 ---
 
-#Overview
+# Overview
 
 iPerf3 is a tool for active measurements of the maximum achievable 
 bandwidth on IP networks. It supports tuning of various parameters 
@@ -20,7 +20,7 @@ NOTE: iPerf3 is not part of any VxWorks® product. If you need help,
 use the resources available or contact your Wind River sales representative 
 to arrange for consulting services.
 
-#Project License
+# Project License
 
 The source code for this project is provided under the BSD-3-Clause license license. 
 Text for the iPerf and other applicable license notices can be found in 
@@ -28,7 +28,7 @@ the LICENSE_NOTICES.txt file in the project top level directory. Different
 files may be under different licenses. Each source file should include a 
 license notice that designates the licensing terms for the respective file.
 
-#Prerequisite(s)
+# Prerequisite(s)
 
 * Install the Wind River® VxWorks® 7 operating system. And ensure the ***Unix 
   Compatibility layer*** was supported in your release. The layer support for 
@@ -43,14 +43,14 @@ license notice that designates the licensing terms for the respective file.
 
 #Building and Using
 
-###Setup
+### Setup
 
 Checkout feature of GitHub to place the contents of this repository 
 in your VxWorks® install tree at an appropriate location, for example:
 
 ***installDir***/vxworks-7/pkgs/net/app
 
-###VSB
+### VSB
 
 The name of this layer is *IPERF3*. The layer is not included by
 default in VSBs, it must be manually added. One example of how to do
@@ -68,12 +68,12 @@ VSB directory:
 The source is patched for VxWorks and the RTP and libraries are built 
 and placed in the standard locations in the VSB directory tree.
 
-###VIP
+### VIP
 
 Adding *IPERF3* to the VSB will build the *iperf3* library. The library 
 is not automatically added to VIP. There are two VIP components for iperf3.
 
-####C-interpreter
+#### C-interpreter
 
 The iPerf3 command is made available to the VxWorks C-interpreter via
 the *INCLUDE_IPER3* VIP component. It can be added like this
@@ -109,7 +109,7 @@ or
 
 with a specific Link Local address	
 
-####Command line shell
+#### Command line shell
 
 The iPerf3 command can also be made available through the VxWorks
 command line shell by including the VIP component INCLUDE_IPERF3_CMD
@@ -167,7 +167,7 @@ For IPv6 Gloable Unicast address do like this
 
     [vxWorks *]# iperf3 -c 2001:db8:21:111:0:0:0:1 -6	
 
-#Legal Notices
+# Legal Notices
 
 All product names, logos, and brands are property of their respective owners. All company, 
 product and service names used in this software are for identification purposes only. 
