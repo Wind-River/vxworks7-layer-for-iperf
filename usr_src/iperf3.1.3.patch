@@ -1,6 +1,6 @@
 diff -Naur src/cjson.c src_new/cjson.c
 --- src/cjson.c	2016-06-07 02:18:49.000000000 +0800
-+++ src_new/cjson.c	2016-10-25 16:43:18.805637367 +0800
++++ src_new/cjson.c	2019-04-17 14:17:26.220182700 +0800
 @@ -23,6 +23,7 @@
  /* cJSON */
  /* JSON parser in C. */
@@ -11,7 +11,7 @@ diff -Naur src/cjson.c src_new/cjson.c
  #include <math.h>
 diff -Naur src/iperf_client_api.c src_new/iperf_client_api.c
 --- src/iperf_client_api.c	2016-06-07 02:18:49.000000000 +0800
-+++ src_new/iperf_client_api.c	2016-10-25 16:46:51.401634958 +0800
++++ src_new/iperf_client_api.c	2019-04-17 14:22:01.281822000 +0800
 @@ -323,6 +323,9 @@
  
      if (iperf_set_send_state(test, IPERF_DONE) != 0)
@@ -22,14 +22,20 @@ diff -Naur src/iperf_client_api.c src_new/iperf_client_api.c
  
      return 0;
  }
-@@ -369,6 +372,10 @@
+@@ -369,7 +372,15 @@
  	memcpy(&write_set, &test->write_set, sizeof(fd_set));
  	(void) gettimeofday(&now, NULL);
  	timeout = tmr_timeout(&now);
+-	result = select(test->max_fd + 1, &read_set, &write_set, NULL, timeout);
 +    if (timeout != NULL && timeout->tv_sec == 0 && timeout->tv_usec == 0) {
 +        taskDelay (1);
 +    }
 +
- 	result = select(test->max_fd + 1, &read_set, &write_set, NULL, timeout);
++    result = select(test->max_fd + 1,
++                    &read_set,
++                    (test->state == TEST_RUNNING && !test->reverse) ? &write_set : NULL,
++                    NULL,
++                    timeout);
  	if (result < 0 && errno != EINTR) {
    	    i_errno = IESELECT;
+ 	    return -1;
