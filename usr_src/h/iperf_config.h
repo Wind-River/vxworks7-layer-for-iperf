@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2016, Wind River Systems, Inc.
+Copyright (c) 2016, 2019 Wind River Systems, Inc.
 
 Redistribution and use in source and binary forms, with or without modification, are
 permitted provided that the following conditions are met:
@@ -47,6 +47,9 @@ OF THEUSE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Define to 1 if you have the <netinet/sctp.h> header file. */
 /* #undef HAVE_NETINET_SCTP_H */
 
+/* Define to 1 if you have the <poll.h> header file. */
+/* #undef HAVE_POLL_H */
+
 /* Define to 1 if you have the `sched_setaffinity' function. */
 /* #undef HAVE_SCHED_SETAFFINITY */
 
@@ -59,6 +62,8 @@ OF THEUSE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Have SO_MAX_PACING_RATE sockopt. */
 /* #undef HAVE_SO_MAX_PACING_RATE */
 
+/* OpenSSL Is Available */
+/*#undef HAVE_SSL*/
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
 
@@ -103,7 +108,7 @@ OF THEUSE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PACKAGE_NAME "iperf"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "iperf 3.1"
+#define PACKAGE_STRING "iperf 3.7"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "iperf"
@@ -112,16 +117,19 @@ OF THEUSE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PACKAGE_URL "http://software.es.net/iperf/"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "3.1"
+#define PACKAGE_VERSION "3.7"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "3.1"
+#define VERSION "3.7"
 
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */
+
+/* Define to 1 if you have the `daemon' function. */
+#define HAVE_DAEMON 1
 
 #include <sockLib.h>
 #include "wrappers.h"

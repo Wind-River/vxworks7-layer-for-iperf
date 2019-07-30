@@ -1,7 +1,7 @@
 /* iperf3.cdf - iperf3 network benchmark tool configuration file */
 
 /*
-Copyright (c) 2016, Wind River Systems, Inc.
+Copyright (c) 2016, 2019 Wind River Systems, Inc.
 
 Redistribution and use in source and binary forms, with or without modification, are
 permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@ OF THEUSE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*
 modification history
 --------------------
+29jul19,chm  update to iperf version to 3.7
 30aut16,kjn  created
 */
 
@@ -36,7 +37,7 @@ Component INCLUDE_IPERF3 {
         SYNOPSIS        iperf3 is a TCP, UDP, and SCTP network bandwidth measurement tool
         MODULES         vxiperf3.o
         LINK_SYMS       iperf3
-        REQUIRES        INCLUDE_SOCKLIB INCLUDE_GETOPT INCLUDE_RTP
+        REQUIRES        INCLUDE_SOCKLIB INCLUDE_GETOPT INCLUDE_RTP INCLUDE_DEV_URANDOM
         _CHILDREN       FOLDER_NETWORK
 }
 
@@ -47,6 +48,6 @@ Component INCLUDE_IPERF3_CMD {
         INIT_RTN        usrIperf3CmdInit ();
         PROTOTYPE       IMPORT void usrIperf3CmdInit (void);
         _INIT_ORDER     usrShellCmdInit
-        REQUIRES        INCLUDE_SOCKLIB INCLUDE_GETOPT INCLUDE_SHELL_INTERP_CMD
+        REQUIRES        INCLUDE_SOCKLIB INCLUDE_GETOPT INCLUDE_SHELL_INTERP_CMD INCLUDE_DEV_URANDOM
         _CHILDREN       FOLDER_NETWORK
 }

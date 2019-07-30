@@ -1,7 +1,7 @@
 /* wrappers.h - wrapper functions required to build iperf for VxWorks */
 
 /*
-Copyright (c) 2016, 2018 Wind River Systems, Inc.
+Copyright (c) 2016, 2018-2019 Wind River Systems, Inc.
 
 Redistribution and use in source and binary forms, with or without modification, are
 permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@ OF THEUSE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*
 modification history
 --------------------
+29jul19,chm  update to iperf version to 3.7
 23jul18,chm  fix V7TST-1125
 27mar18,wjf  modify for conflict of gethostname (V7TST-1026)
 31aug16,kjn  written
@@ -48,6 +49,9 @@ modification history
 #include <taskLib.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/cdefs.h>
+#include <sys/types.h>
+#include <sys/time.h>
 #include "netdb.h"
 
 #ifdef __cplusplus
@@ -60,9 +64,85 @@ extern "C" {
 
 #define DUMMY_FD	99
 
+#ifndef MAX
+#define MAX(a,b)    ((a) > (b) ? (a) : (b))
+#endif
+
+/*
+ * Requestable events.  If poll(2) finds any of these set, they are
+ * copied to revents on return.
+ * XXX Note that FreeBSD doesn't make much distinction between POLLPRI
+ * and POLLRDBAND since none of the file types have distinct priority
+ * bands - and only some have an urgent "mode".
+ * XXX Note POLLIN isn't really supported in true SVSV terms.  Under SYSV
+ * POLLIN includes all of normal, band and urgent data.  Most poll handlers
+ * on FreeBSD only treat it as "normal" data.
+ */
+#define	POLLIN		0x0001		/* any readable data available */
+#define	POLLPRI		0x0002		/* OOB/Urgent readable data */
+#define	POLLOUT		0x0004		/* file descriptor is writeable */
+#define	POLLRDNORM	0x0040		/* non-OOB/URG data available */
+#define	POLLWRNORM	POLLOUT		/* no write type differentiation */
+#define	POLLRDBAND	0x0080		/* OOB/Urgent readable data */
+#define	POLLWRBAND	0x0100		/* OOB/Urgent data can be written */
+
+
+/*
+ * These events are set if they occur regardless of whether they were
+ * requested.
+ */
+#define	POLLERR		0x0008		/* some poll error occurred */
+#define	POLLHUP		0x0010		/* file descriptor was "hung up" */
+#define	POLLNVAL	0x0020		/* requested events "invalid" */
+
+
+#define	POLLSTANDARD	(POLLIN|POLLPRI|POLLOUT|POLLRDNORM|POLLRDBAND|\
+			 POLLWRBAND|POLLERR|POLLHUP|POLLNVAL)
+
+/*
+ * Request that poll() wait forever.
+ * XXX in SYSV, this is defined in stropts.h, which is not included
+ * by poll.h.
+ */
+#define	INFTIM		(-1)
+
 extern int h_errno;
 
 /* typedefs */
+
+typedef	unsigned int	nfds_t;
+
+/* locals */
+
+/* This struct is used by gai_strerror. */
+
+static struct ai_errlist {
+        const char *str;
+        int code;
+} ai_errlist[] = {
+        { "Success",                                    0 },
+        { "Invalid value for ai_flags",                 EAI_BADFLAGS },
+        { "Non-recoverable failure in name resolution", EAI_FAIL },
+        { "ai_family not supported",                    EAI_FAMILY },
+        { "Memory allocation failure",                  EAI_MEMORY },
+        { "hostname nor servname provided, or not known", EAI_NONAME },
+        { "servname not supported for ai_socktype",     EAI_SERVICE },
+        { "ai_socktype not supported",                  EAI_SOCKTYPE },
+        { "System error returned in errno",             EAI_SYSTEM },
+        /* backward compatibility with userland code prior to 2553bis-02 */
+        { "Address family for hostname not supported",  1 },
+        { "No address associated with hostname",        7 },
+        { NULL,                                         -1 },
+};
+
+/*
+ * This structure is passed as an array to poll(2).
+ */
+struct pollfd {
+	int	fd;		/* which file descriptor to poll */
+	short	events;		/* events we are interested in */
+	short	revents;	/* events found on return */
+};
 
 /* function declarations */
 
@@ -348,6 +428,164 @@ _WRS_INLINE int getaddrinfo(const char *nodename, const char *servname, const st
 
     return result;
 }
+
+/*******************************************************************************
+*
+* gai_strerror - convert a numeric error code into a string
+*
+* DESCRIPTION
+* This routine uses 'ai_errlist' to convert an error code returned by
+* getaddrinfo() into a string.
+*
+* RETURNS: The error string.
+*
+* ERRNO: N/A
+*
+*/
+
+_WRS_INLINE char * gai_strerror
+    (
+    int ecode
+    )
+    {
+    struct ai_errlist *p;
+
+    for (p = ai_errlist; p->str; p++)
+        {
+        if (p->code == ecode)
+            return (char *)p->str;
+        }
+
+    return "Unknown error";
+    }
+	
+/*******************************************************************************
+* 
+* poll - waits for file descriptors to become ready to perform I/O.
+*
+* RETURNS: Selected file descriptor, ERROR=-1 on error, or 0 when none found.
+*
+* \NOMANUAL
+*/
+
+_WRS_INLINE int poll
+    (
+    struct pollfd fds[],
+	nfds_t             nfds,
+    int             timeout
+    )
+    {
+    fd_set fdsRead;                         /* read fds - POLLIN */
+    fd_set fdsWrite;                        /* write fds - POLLOUT */
+    fd_set fdsException;                    /* exception fds */
+
+    struct timeval tv, *tvp = NULL;
+    int i, fdError = -1;
+
+    struct pollfd *pfd;
+    int foundFD = 0, maxfd = 0;
+
+    if (fds == NULL)
+        {
+        return fdError;
+        }
+
+    FD_ZERO(&fdsRead);
+    FD_ZERO(&fdsWrite);
+    FD_ZERO(&fdsException);
+
+    for (pfd = fds, i = 0; i < nfds; i++, pfd++)
+        {
+        if (pfd->fd < 0)
+            continue;
+
+        if (pfd->events & POLLIN)
+            {
+            FD_SET(pfd->fd, &fdsRead);
+            }
+            
+        if (pfd->events & POLLOUT)
+            {
+            FD_SET(pfd->fd, &fdsWrite);
+            }
+
+        if (pfd->events & POLLPRI)
+            {
+            FD_SET(pfd->fd, &fdsException);
+            }
+
+        maxfd = MAX (maxfd, pfd->fd);
+
+        }
+
+    if (timeout > 0)
+        {
+        tv.tv_sec = timeout / 1000;
+        tv.tv_usec = (timeout % 1000) * 1000;
+        tvp = &tv;
+        }
+    else if (timeout == 0)
+        {
+        tv.tv_sec = 0;
+        tv.tv_usec = 0;
+        tvp = &tv;
+        }
+    else
+        {
+        tvp = (struct timeval *) NULL;
+        }
+
+    foundFD = select(maxfd + 1, &fdsRead, &fdsWrite, &fdsException, tvp);
+
+    if (foundFD >= 0)
+        {
+
+        for (pfd = fds, i = 0; i < nfds; i++, pfd++)
+            {
+
+            if (pfd->fd < 0)
+                continue;
+
+            pfd->revents = 0;
+
+#if 0
+            /*
+             * Do not update 'r'events if it was not requested to be
+             * updated as indicated by events.
+             */
+
+            if ((pfd->events & POLLIN) && FD_ISSET(pfd->fd, &fdsRead))
+                {
+                pfd->revents |= POLLIN;
+                }
+            
+            if ((pfd->events & POLLOUT) && FD_ISSET(pfd->fd, &fdsWrite))
+                {
+                pfd->revents |= POLLOUT;
+                }
+            
+            if ((pfd->events != 0) && FD_ISSET(pfd->fd, &fdsException))
+                {
+                pfd->revents |= POLLERR;
+                }
+
+#else
+            if (FD_ISSET(pfd->fd, &fdsException))
+                pfd->revents |= POLLPRI;
+
+            if (FD_ISSET(pfd->fd, &fdsRead))
+                pfd->revents |= POLLIN;
+
+            if (FD_ISSET(pfd->fd, &fdsWrite))
+                pfd->revents |= POLLOUT;
+#endif
+            }
+            
+        }
+
+    return foundFD;
+
+    }	
 	
 #ifdef __cplusplus
 }

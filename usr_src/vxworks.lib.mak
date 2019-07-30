@@ -1,6 +1,6 @@
 #  vxworks.mak - for iperf3
 #
-#Copyright (c) 2016, Wind River Systems, Inc.
+#Copyright (c) 2016, 2019 Wind River Systems, Inc.
 #
 #Redistribution and use in source and binary forms, with or without modification, are
 #permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 #
 #  modification history
 #  --------------------
+#  29jul19,chm  update to iperf version to 3.7
 #  06Oct16,chm  written
 #
 
@@ -59,20 +60,22 @@ EXTRA_DEFINE += -Dfcntl=iperf3Fcntl
 OBJS = vxiperf3.o  \
        cjson.o  \
        iperf_api.o  \
-	   iperf_client_api.o  \
-	   iperf_error.o  \
-	   iperf_locale.o  \
-	   iperf_sctp.o  \
-	   iperf_server_api.o  \
-	   iperf_tcp.o  \
-	   iperf_udp.o  \
-	   iperf_util.o  \
-	   main.o  \
-	   net.o  \
-	   tcp_info.o  \
-	   tcp_window_size.o  \
-	   timer.o  \
-	   units.o
+       iperf_client_api.o  \
+       iperf_error.o  \
+       iperf_locale.o  \
+       iperf_sctp.o  \
+       iperf_server_api.o  \
+       iperf_tcp.o  \
+       iperf_udp.o  \
+       iperf_util.o  \
+       main.o  \
+       net.o  \
+       tcp_info.o  \
+       timer.o  \
+       units.o  \
+       dscp.o  \
+       iperf_time.o  \
+       t_api.o  
 
 include $(WIND_USR_MK)/rules.library.mk
 

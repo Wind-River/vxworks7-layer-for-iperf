@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2016, Wind River Systems, Inc.
+Copyright (c) 2016, 2019 Wind River Systems, Inc.
 
 Redistribution and use in source and binary forms, with or without modification, are
 permitted provided that the following conditions are met:
@@ -22,4 +22,4 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVERCAUSED AND ON ANY THEORY OF L
 IN CONTRACT, STRICT LIABILITY,OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THEUSE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#define IPERF_VERSION "3.1"
+#define IPERF_VERSION "3.7"
