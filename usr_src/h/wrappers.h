@@ -28,6 +28,7 @@ OF THEUSE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*
 modification history
 --------------------
+25may20,chm  fix V7NET-2812
 29jul19,chm  update to iperf version to 3.7
 23jul18,chm  fix V7TST-1125
 27mar18,wjf  modify for conflict of gethostname (V7TST-1026)
@@ -179,9 +180,11 @@ _WRS_INLINE long int random (void)
     return rand();
     }
 
+#define mkstemp mkstemp_fake
+
 /*******************************************************************************
 *
-* mkstemp - create a temporary file
+* mkstemp_fake - create a temporary file
 *
 * Wrapper function
 *
@@ -190,7 +193,7 @@ _WRS_INLINE long int random (void)
 * ERRNO: N/A
 */
 
-_WRS_INLINE int mkstemp
+_WRS_INLINE int mkstemp_fake
     (
     char * template
     )
