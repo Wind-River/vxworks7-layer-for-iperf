@@ -48,7 +48,7 @@ license notice that designates the licensing terms for the respective file.
 Checkout feature of GitHub to place the contents of this repository 
 in your VxWorks® install tree at an appropriate location, for example:
 
-***installDir***/vxworks-7/pkgs/net/app
+***installDir***/vxworks/relx/os/net/app$ git clone https://github.com/Wind-River/vxworks7-layer-for-iperf.git
 
 ### VSB
 
